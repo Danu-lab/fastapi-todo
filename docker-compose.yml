@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  web:
+    container_name: fastapi_todo_web
+    build: .
+    command: []
+    entrypoint: ["/entrypoint.sh"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app:cached # optimize for macOS; remove for production
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    container_name: fastapi_todo_db
+    image: postgres:17-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
